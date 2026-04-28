@@ -1,0 +1,70 @@
+-------------------------------------------------------------------------------
+['java', '-cp', 'C:\\Users\\gupta\\SumoCallibration\\project\\results\\cadyts_corridor_20260222_20260225\\cadyts.jar', '-Xmx1G', 'floetteroed.cadyts.interfaces.sumo.SumoController', 'INIT', '-varscale', '1.0', '-freezeit', '2', '-measfile', 'C:\\Users\\gupta\\SumoCallibration\\project\\results\\cadyts_corridor_20260222_20260225\\calibration\\detector_output.xml', '-binsize', '900', '-PREPITS', '1', '-bruteforce', 'False', '-demandscale', '1.0', '-mincountstddev', '25.0', '-overridett', 'False', '-clonepostfix', '-CLONE', '-cntfirstlink', 'False', '-cntlastlink', 'False']
+Mar 16, 2026 7:45:06 PM floetteroed.cadyts.interfaces.sumo.SumoController main
+INFO: processing call: INIT -varscale 1.0 -freezeit 2 -measfile C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\detector_output.xml -binsize 900 -PREPITS 1 -bruteforce False -demandscale 1.0 -mincountstddev 25.0 -overridett False -clonepostfix -CLONE -cntfirstlink False -cntlastlink False 
+Calibration 2026-03-16 19:45:06 WARNING unable to delete old logfile -> floetteroed.cadyts.calibrators.Calibrator.<init>
+Calibration 2026-03-16 19:45:06 INFO starting SumoCalibrator version 1.1.0
+Calibration 2026-03-16 19:45:06 INFO initializing with randomSeed = 0, timeBinSize_s = 900, timeBinCnt = 96
+Calibration 2026-03-16 19:45:06 INFO default regressionInertia is 0.95
+Calibration 2026-03-16 19:45:06 INFO default freezeIteration is 2147483647
+Calibration 2026-03-16 19:45:06 INFO default varianceScale is 1.0
+Calibration 2026-03-16 19:45:06 INFO default preparatoryIterations is 1
+Calibration 2026-03-16 19:45:06 INFO default centerRegression is false
+Calibration 2026-03-16 19:45:06 INFO default statisticsFile is calibration-stats.txt
+Calibration 2026-03-16 19:45:06 INFO default proportionalAssignment is false
+Calibration 2026-03-16 19:45:06 INFO default debugMode is false
+Calibration 2026-03-16 19:45:06 INFO default flowAnalysisFile is null
+Calibration 2026-03-16 19:45:06 INFO default countFirstLink is false
+Calibration 2026-03-16 19:45:06 INFO default countLastLink is true
+Calibration 2026-03-16 19:45:06 INFO default minimum standard deviation for FLOW_VEH_H is 25.0
+Calibration 2026-03-16 19:45:06 INFO default minimum standard deviation for COUNT_VEH is 25.0
+Calibration 2026-03-16 19:45:06 INFO default bruteForce is false
+Calibration 2026-03-16 19:45:06 INFO default demandScale is 1.0
+Calibration 2026-03-16 19:45:06 INFO default overrideTravelTimes is false
+Calibration 2026-03-16 19:45:06 INFO default fmaPrefix is null
+Calibration 2026-03-16 19:45:06 INFO default clonePostfix is -CLONE
+Calibration 2026-03-16 19:45:06 INFO set regressionInertia to 0.95
+Calibration 2026-03-16 19:45:06 INFO set varianceScale to 1.0
+Calibration 2026-03-16 19:45:06 INFO set freezeIteration to 2
+Calibration 2026-03-16 19:45:06 INFO set minimum standard deviation for FLOW_VEH_H to 25.0
+Calibration 2026-03-16 19:45:06 INFO set minimum standard deviation for COUNT_VEH to 25.0
+Calibration 2026-03-16 19:45:06 INFO set preparatoryIterations to 1
+Calibration 2026-03-16 19:45:06 INFO set centerRegression to false
+Calibration 2026-03-16 19:45:06 INFO set statisticsFile to calibration-stats.txt
+Calibration 2026-03-16 19:45:06 INFO set proportionalAssignment to false
+Calibration 2026-03-16 19:45:06 INFO set countFirstLink to false
+Calibration 2026-03-16 19:45:06 INFO set countLastLink to false
+Calibration 2026-03-16 19:45:06 INFO set debugMode to false
+Calibration 2026-03-16 19:45:06 INFO set bruteForce to false
+Calibration 2026-03-16 19:45:06 INFO set demandScale to 1.0
+Calibration 2026-03-16 19:45:06 INFO set overrideTravelTimes to false
+Calibration 2026-03-16 19:45:06 INFO set fmaPrefix to null
+Calibration 2026-03-16 19:45:06 INFO set clonePostfix to -CLONE
+Calibration 2026-03-16 19:45:06 INFO loading measurement file C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\detector_output.xml
+Calibration 2026-03-16 19:45:06 INFO serializing to file serialized.bin
+-------------------------------------------------------------------------------
+['java', '-cp', 'C:\\Users\\gupta\\SumoCallibration\\project\\results\\cadyts_corridor_20260222_20260225\\cadyts.jar', '-Xmx1G', 'floetteroed.cadyts.interfaces.sumo.SumoController', 'CHOICE', '-choicesetfile', 'C:\\Users\\gupta\\SumoCallibration\\project\\results\\cadyts_corridor_20260222_20260225\\calibration\\routes_cadyts_sampled.rou.xml', '-choicefile', '000/routes_cadyts_000.cal.xml']
+Mar 16, 2026 7:45:07 PM floetteroed.cadyts.interfaces.sumo.SumoController main
+INFO: processing call: CHOICE -choicesetfile C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\routes_cadyts_sampled.rou.xml -choicefile 000/routes_cadyts_000.cal.xml 
+Calibration 2026-03-16 19:45:07 INFO deserialized from file serialized.bin
+Calibration 2026-03-16 19:45:07 INFO creating choice file 000/routes_cadyts_000.cal.xml
+Calibration 2026-03-16 19:45:07 INFO loading choice set file C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\routes_cadyts_sampled.rou.xml
+Exception in thread "Thread-0" java.lang.RuntimeException: java.lang.NullPointerException: Cannot invoke "String.split(String)" because "line" is null
+	at floetteroed.cadyts.calibrators.filebased.xml.SAXParserThread.run(SAXParserThread.java:105)
+Caused by: java.lang.NullPointerException: Cannot invoke "String.split(String)" because "line" is null
+	at floetteroed.utilities.XMLHelpers.extractItems(XMLHelpers.java:62)
+	at floetteroed.cadyts.interfaces.sumo.SumoPopulationHandler.startElement(SumoPopulationHandler.java:157)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractXMLDocumentParser.emptyElement(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanStartElement(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(Unknown Source)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(Unknown Source)
+	at java.xml/javax.xml.parsers.SAXParser.parse(Unknown Source)
+	at floetteroed.cadyts.calibrators.filebased.xml.SAXParserThread.run(SAXParserThread.java:103)

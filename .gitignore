@@ -1,0 +1,52 @@
+# Directories with large data files
+000/
+001/
+002/
+003/
+20260222/
+20260225/
+ProcessedVideoOutput/
+VideoProcessingOutput/
+RouteSamplerMethod/
+RouteSamplerMethod2/
+Streamlit_Callibration/
+notebooklm_upload/
+cityflow/
+Research Report/
+Sumo Files/
+project/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+*.lck
+
+# Streamlit
+.streamlit/

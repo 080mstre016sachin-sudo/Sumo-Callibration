@@ -1,0 +1,43 @@
+2026-03-16 19:45:06 WARNING unable to delete old logfile -> floetteroed.cadyts.calibrators.Calibrator.<init>
+2026-03-16 19:45:06 INFO starting SumoCalibrator version 1.1.0
+2026-03-16 19:45:06 INFO initializing with randomSeed = 0, timeBinSize_s = 900, timeBinCnt = 96
+2026-03-16 19:45:06 INFO default regressionInertia is 0.95
+2026-03-16 19:45:06 INFO default freezeIteration is 2147483647
+2026-03-16 19:45:06 INFO default varianceScale is 1.0
+2026-03-16 19:45:06 INFO default preparatoryIterations is 1
+2026-03-16 19:45:06 INFO default centerRegression is false
+2026-03-16 19:45:06 INFO default statisticsFile is calibration-stats.txt
+2026-03-16 19:45:06 INFO default proportionalAssignment is false
+2026-03-16 19:45:06 INFO default debugMode is false
+2026-03-16 19:45:06 INFO default flowAnalysisFile is null
+2026-03-16 19:45:06 INFO default countFirstLink is false
+2026-03-16 19:45:06 INFO default countLastLink is true
+2026-03-16 19:45:06 INFO default minimum standard deviation for FLOW_VEH_H is 25.0
+2026-03-16 19:45:06 INFO default minimum standard deviation for COUNT_VEH is 25.0
+2026-03-16 19:45:06 INFO default bruteForce is false
+2026-03-16 19:45:06 INFO default demandScale is 1.0
+2026-03-16 19:45:06 INFO default overrideTravelTimes is false
+2026-03-16 19:45:06 INFO default fmaPrefix is null
+2026-03-16 19:45:06 INFO default clonePostfix is -CLONE
+2026-03-16 19:45:06 INFO set regressionInertia to 0.95
+2026-03-16 19:45:06 INFO set varianceScale to 1.0
+2026-03-16 19:45:06 INFO set freezeIteration to 2
+2026-03-16 19:45:06 INFO set minimum standard deviation for FLOW_VEH_H to 25.0
+2026-03-16 19:45:06 INFO set minimum standard deviation for COUNT_VEH to 25.0
+2026-03-16 19:45:06 INFO set preparatoryIterations to 1
+2026-03-16 19:45:06 INFO set centerRegression to false
+2026-03-16 19:45:06 INFO set statisticsFile to calibration-stats.txt
+2026-03-16 19:45:06 INFO set proportionalAssignment to false
+2026-03-16 19:45:06 INFO set countFirstLink to false
+2026-03-16 19:45:06 INFO set countLastLink to false
+2026-03-16 19:45:06 INFO set debugMode to false
+2026-03-16 19:45:06 INFO set bruteForce to false
+2026-03-16 19:45:06 INFO set demandScale to 1.0
+2026-03-16 19:45:06 INFO set overrideTravelTimes to false
+2026-03-16 19:45:06 INFO set fmaPrefix to null
+2026-03-16 19:45:06 INFO set clonePostfix to -CLONE
+2026-03-16 19:45:06 INFO loading measurement file C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\detector_output.xml
+2026-03-16 19:45:06 INFO serializing to file serialized.bin
+2026-03-16 19:45:07 INFO deserialized from file serialized.bin
+2026-03-16 19:45:07 INFO creating choice file 000/routes_cadyts_000.cal.xml
+2026-03-16 19:45:07 INFO loading choice set file C:\Users\gupta\SumoCallibration\project\results\cadyts_corridor_20260222_20260225\calibration\routes_cadyts_sampled.rou.xml
