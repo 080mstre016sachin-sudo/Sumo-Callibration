@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 import shutil
@@ -2287,32 +2288,26 @@ def parse_mode_breakdown_from_routesampler_log(log_output: str) -> dict[str, int
     for line in log_output.split("\n"):
         line_lower = line.lower()
         if "bus" in line_lower and ("vehicle" in line_lower or "trip" in line_lower or "sampled" in line_lower):
-            try:
-                import re
-                match = re.search(r"(\d+)\s*(bus|vehicle|trip)", line_lower)
-                if match:
-                    count = int(match.group(1))
-                    breakdown["bus"] += count
-            except (ValueError, AttributeError):
-                pass
+            match = re.search(r"(\d+)\s*(bus|vehicle|trip)", line_lower)
+            if match:
+                try:
+                    breakdown["bus"] += int(match.group(1))
+                except ValueError as exc:
+                    logging.debug("Could not parse bus count from log line: %s (%s)", line.strip(), exc)
         elif "car" in line_lower and ("vehicle" in line_lower or "trip" in line_lower or "sampled" in line_lower):
-            try:
-                import re
-                match = re.search(r"(\d+)\s*(car|vehicle|trip)", line_lower)
-                if match:
-                    count = int(match.group(1))
-                    breakdown["car"] += count
-            except (ValueError, AttributeError):
-                pass
+            match = re.search(r"(\d+)\s*(car|vehicle|trip)", line_lower)
+            if match:
+                try:
+                    breakdown["car"] += int(match.group(1))
+                except ValueError as exc:
+                    logging.debug("Could not parse car count from log line: %s (%s)", line.strip(), exc)
         elif "motorcycle" in line_lower and ("vehicle" in line_lower or "trip" in line_lower or "sampled" in line_lower):
-            try:
-                import re
-                match = re.search(r"(\d+)\s*(motorcycle|vehicle|trip)", line_lower)
-                if match:
-                    count = int(match.group(1))
-                    breakdown["motorcycle"] += count
-            except (ValueError, AttributeError):
-                pass
+            match = re.search(r"(\d+)\s*(motorcycle|vehicle|trip)", line_lower)
+            if match:
+                try:
+                    breakdown["motorcycle"] += int(match.group(1))
+                except ValueError as exc:
+                    logging.debug("Could not parse motorcycle count from log line: %s (%s)", line.strip(), exc)
     
     breakdown["total"] = breakdown["bus"] + breakdown["car"] + breakdown["motorcycle"]
     return breakdown
@@ -2351,7 +2346,8 @@ def get_routesampler_supported_options(route_sampler: Path) -> set[str]:
             timeout=20,
         )
         help_text = (completed.stdout or "") + "\n" + (completed.stderr or "")
-    except Exception:
+    except (OSError, subprocess.SubprocessError) as exc:
+        logging.warning("Could not query routeSampler help: %s", exc)
         return set()
 
     return set(re.findall(r"--[a-zA-Z0-9][a-zA-Z0-9_.-]*", help_text))
@@ -2381,8 +2377,9 @@ def ensure_scipy_available(install_if_missing: bool = False) -> tuple[bool, str 
         if completed.returncode == 0 and is_scipy_available():
             return True, "SciPy was installed automatically; routeSampler --optimize is enabled."
         return False, "SciPy install attempt failed; running routeSampler without --optimize."
-    except Exception:
-        return False, "SciPy install attempt failed; running routeSampler without --optimize."
+    except (OSError, subprocess.SubprocessError) as exc:
+        logging.warning("SciPy install attempt raised an exception: %s", exc)
+        return False, f"SciPy install attempt failed ({exc}); running routeSampler without --optimize."
 
 
 def build_mode_routesampler_args(
@@ -3526,7 +3523,8 @@ def main() -> None:
     if "mapping_df" not in st.session_state:
         try:
             st.session_state.mapping_df = read_location_mapping(location_workbook) if location_workbook.exists() else pd.DataFrame()
-        except Exception:
+        except (OSError, ValueError, KeyError) as exc:
+            logging.warning("Failed to load location mapping from %s: %s", location_workbook, exc)
             st.session_state.mapping_df = pd.DataFrame()
     if "log_text" not in st.session_state:
         st.session_state.log_text = ""
@@ -3598,9 +3596,11 @@ def main() -> None:
                 summary_df = master_summary_df.copy()
                 phase1_progress.progress(30, text="Source workbooks loaded")
             except Exception as exc:
+                logging.error("Failed to load consolidated workbooks: %s", exc)
                 st.error(f"Failed to load consolidated workbooks: {exc}")
                 phase1_progress.progress(100, text="Phase 1 failed")
                 phase1_status.error("Phase 1 stopped while loading source workbooks.")
+                st.stop()
 
             compact_frames: dict[str, pd.DataFrame] | None = None
             edgewise_frames: dict[str, pd.DataFrame] | None = None
@@ -3777,7 +3777,8 @@ def main() -> None:
                 whitelist_candidates = sorted(location_edge_map.keys())
             elif st.session_state.mapping_df is not None and not st.session_state.mapping_df.empty and "LocationName" in st.session_state.mapping_df.columns:
                 whitelist_candidates = sorted(st.session_state.mapping_df["LocationName"].astype(str).unique().tolist())
-        except Exception:
+        except (OSError, ValueError, KeyError) as exc:
+            logging.warning("Could not resolve whitelist candidates: %s", exc)
             whitelist_candidates = []
 
         default_whitelist = [

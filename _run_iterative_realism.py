@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 import subprocess
 import pandas as pd
 import openpyxl
@@ -32,13 +33,29 @@ def parse_report(path: Path):
         if s.startswith("- Realism classification:"):
             out["realism"] = s.split(":",1)[1].strip()
         elif s.startswith("- Mean waiting time:"):
-            out["wait"] = float(re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)[0])
+            nums = re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)
+            if nums:
+                out["wait"] = float(nums[0])
+            else:
+                logging.warning("No numeric value found in line: %s (file: %s)", s, path)
         elif s.startswith("- Mean speed relative"):
-            out["speed"] = float(re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)[0])
+            nums = re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)
+            if nums:
+                out["speed"] = float(nums[0])
+            else:
+                logging.warning("No numeric value found in line: %s (file: %s)", s, path)
         elif s.startswith("- Edges with teleports:"):
-            out["tele"] = float(re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)[0])
+            nums = re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)
+            if nums:
+                out["tele"] = float(nums[0])
+            else:
+                logging.warning("No numeric value found in line: %s (file: %s)", s, path)
         elif s.startswith("- GEH < 5 share:"):
-            out["geh"] = float(re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)[0])
+            nums = re.findall(r"[-+]?[0-9]*\.?[0-9]+", s)
+            if nums:
+                out["geh"] = float(nums[0])
+            else:
+                logging.warning("No numeric value found in line: %s (file: %s)", s, path)
     return out
 
 
@@ -120,8 +137,13 @@ ns_mults = [1.0,0.9,0.8,0.7]
 ew_mults = [1.0,1.15,1.30,1.45,1.60]
 
 idx = 0
+_early_stop = False
 for s in scales:
+    if _early_stop:
+        break
     for nsm in ns_mults:
+        if _early_stop:
+            break
         for ewm in ew_mults:
             idx += 1
             tag=f"i{idx:03d}_s{int(s*100):02d}_ns{int(nsm*100):03d}_ew{int(ewm*100):03d}"
@@ -132,18 +154,11 @@ for s in scales:
                 # early stop if both become better than severe
                 if r['cal']['realism'] != 'Severely congested' and r['val']['realism'] != 'Severely congested':
                     print('EARLY_STOP_BETTER_THAN_SEVERE')
-                    raise StopIteration
-            except StopIteration:
-                break
-            except Exception as e:
-                print(f"{tag}: FAILED {e}")
+                    _early_stop = True
+                    break
+            except (subprocess.CalledProcessError, OSError, ValueError) as e:
+                logging.warning("%s: FAILED %s", tag, e)
                 continue
-        else:
-            continue
-        break
-    else:
-        continue
-    break
 
 if not cands:
     raise RuntimeError('No successful iterations')

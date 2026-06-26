@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pandas as pd
@@ -81,8 +82,14 @@ def write_compiled_direction_sheet(workbook: Workbook, dataframe: pd.DataFrame, 
 def read_summary_total(workbook) -> int:
     sheet = workbook["Summary"]
     for row in sheet.iter_rows(min_row=2, values_only=True):
+        if len(row) < 2:
+            continue
         if row[0] is not None and str(row[0]).strip().upper() == "TOTAL":
-            return int(row[1] or 0)
+            try:
+                return int(row[1] or 0)
+            except (TypeError, ValueError) as exc:
+                logging.warning("Could not parse Summary TOTAL value %r: %s", row[1], exc)
+                return 0
     return 0
 
 
@@ -90,18 +97,24 @@ def read_approach_rows(workbook) -> list[dict[str, object]]:
     sheet = workbook["Approach-Wise"]
     rows: list[dict[str, object]] = []
     for row in sheet.iter_rows(min_row=2, values_only=True):
+        if len(row) < 6:
+            logging.warning("Skipping short row in Approach-Wise sheet (expected 6+ columns, got %d)", len(row))
+            continue
         if not row[1]:
             continue
-        rows.append(
-            {
-                "approach": str(row[0]).strip() if row[0] else "",
-                "direction": str(row[1]).strip(),
-                "direction_count": int(row[2] or 0),
-                "bus": int(row[3] or 0),
-                "car": int(row[4] or 0),
-                "motorcycle": int(row[5] or 0),
-            }
-        )
+        try:
+            rows.append(
+                {
+                    "approach": str(row[0]).strip() if row[0] else "",
+                    "direction": str(row[1]).strip(),
+                    "direction_count": int(row[2] or 0),
+                    "bus": int(row[3] or 0),
+                    "car": int(row[4] or 0),
+                    "motorcycle": int(row[5] or 0),
+                }
+            )
+        except (TypeError, ValueError) as exc:
+            logging.warning("Skipping malformed Approach-Wise row %r: %s", row[:6], exc)
     return rows
 
 

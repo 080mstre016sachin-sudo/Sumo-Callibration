@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import logging
 import re
 import shutil
 import argparse
+import zipfile
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -348,7 +350,8 @@ def parse_summary_sheet(sheet, fallback_interval: str | None) -> list[dict[str, 
 def extract_direction_counts(path: Path, fallback_interval: str | None) -> list[dict[str, object]]:
     try:
         workbook = load_workbook(path, read_only=True, data_only=True)
-    except Exception:
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile) as exc:
+        logging.warning("Failed to load workbook %s: %s", path, exc)
         return []
 
     sheet = get_sheet_case_insensitive(workbook, "Direction Counts")
@@ -595,8 +598,8 @@ def write_workbook(sheets: dict[str, pd.DataFrame]) -> tuple[Path, Path | None]:
                 frame.to_excel(writer, sheet_name=sheet_name, index=False)
         try:
             shutil.copy2(fallback_path, OUTPUT_PATH)
-        except Exception:
-            pass
+        except OSError as exc:
+            logging.warning("Could not copy fallback workbook to %s: %s", OUTPUT_PATH, exc)
         return OUTPUT_PATH, fallback_path
 
 
