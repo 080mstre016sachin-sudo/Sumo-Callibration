@@ -4,11 +4,20 @@ import re
 import shutil
 import argparse
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 from openpyxl import load_workbook
+
+from shared_utils import (
+    canonicalize_to_5min_interval,
+    interval_in_window,
+    is_total_text,
+    normalize_date_token,
+    normalize_direction,
+    to_seconds,
+)
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent
 RAW_ROOT = WORKSPACE_ROOT / "ProcessedVideoOutput"
@@ -55,8 +64,8 @@ LOCATION_ORDER = [
 ]
 LOCATION_ORDER_IDX = {name: idx for idx, name in enumerate(LOCATION_ORDER)}
 
-TIME_RANGE_RE = re.compile(r"(\d{1,2})[.:_](\d{2})(?:[.:_](\d{2}))?\s*-\s*(\d{1,2})[.:_](\d{2})(?:[.:_](\d{2}))?")
-NUMERIC_STEM_RE = re.compile(r"^\d{3,4}$")
+_TIME_RANGE_RE = re.compile(r"(\d{1,2})[.:_](\d{2})(?:[.:_](\d{2}))?\s*-\s*(\d{1,2})[.:_](\d{2})(?:[.:_](\d{2}))?")
+_NUMERIC_STEM_RE = re.compile(r"^\d{3,4}$")
 SUMMARY_MARKERS = ("compile", "summary", "edgewise", "datewise", "compact")
 TRAILING_STAMP_RE = re.compile(r"(\d{8})_(\d{6})$")
 
@@ -72,53 +81,15 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def normalize_date_token(value: str) -> str | None:
-    text = str(value).strip()
-    if not text:
-        return None
-
-    compact = re.sub(r"\D", "", text)
-    if len(compact) == 8:
-        try:
-            if compact.startswith("20"):
-                return datetime.strptime(compact, "%Y%m%d").strftime("%Y-%m-%d")
-            return datetime.strptime(compact, "%d%m%Y").strftime("%Y-%m-%d")
-        except ValueError:
-            pass
-
-    normalized = re.sub(r"[\s_/\\.]+", "-", text)
-    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%m-%d-%Y"):
-        try:
-            return datetime.strptime(normalized, fmt).strftime("%Y-%m-%d")
-        except ValueError:
-            continue
-    return None
+# normalize_date_token is imported from shared_utils
 
 
 def parse_interval_from_filename(path: Path) -> str | None:
-    stem = path.stem.strip()
-    match = TIME_RANGE_RE.search(stem)
-    if match:
-        h1, m1, s1, h2, m2, s2 = match.groups()
-        try:
-            start = datetime(2000, 1, 1, int(h1), int(m1), int(s1 or 0))
-            end = datetime(2000, 1, 1, int(h2), int(m2), int(s2 or 0))
-            return f"{start.strftime('%H:%M:%S')}-{end.strftime('%H:%M:%S')}"
-        except ValueError:
-            return None
-
-    if NUMERIC_STEM_RE.fullmatch(stem):
-        token = stem.zfill(4)
-        hh = int(token[:2])
-        mm = int(token[2:])
-        try:
-            base = datetime(2000, 1, 1, hh, mm, 0)
-        except ValueError:
-            return None
-        start = base + timedelta(minutes=10)
-        end = start + timedelta(minutes=5)
-        return f"{start.strftime('%H:%M:%S')}-{end.strftime('%H:%M:%S')}"
-
+    """Extract a single interval string 'HH:MM:SS-HH:MM:SS' from a filename."""
+    from shared_utils import parse_interval_from_filename as _shared_parse
+    start, end = _shared_parse(path)
+    if start and end:
+        return f"{start}-{end}"
     return None
 
 
@@ -130,7 +101,7 @@ def classify_filename_priority(path: Path) -> int:
         return 3
     if "direction" in name:
         return 2
-    if NUMERIC_STEM_RE.fullmatch(path.stem.strip()):
+    if _NUMERIC_STEM_RE.fullmatch(path.stem.strip()):
         return 1
     return 0
 
@@ -159,52 +130,8 @@ def choose_best_candidate(candidates: list[dict[str, object]]) -> dict[str, obje
     return sorted(candidates, key=score, reverse=True)[0]
 
 
-def to_seconds(value: str) -> int | None:
-    text = str(value).strip()
-    parts = text.split(":")
-    if len(parts) != 3:
-        return None
-    try:
-        h, m, s = (int(part) for part in parts)
-    except ValueError:
-        return None
-    if not (0 <= h <= 23 and 0 <= m <= 59 and 0 <= s <= 59):
-        return None
-    return h * 3600 + m * 60 + s
-
-
-def interval_in_window(interval: str, begin_sec: int, end_sec: int) -> bool:
-    start_text, _, end_text = interval.partition("-")
-    start_sec = to_seconds(start_text)
-    finish_sec = to_seconds(end_text)
-    if start_sec is None or finish_sec is None:
-        return False
-    return start_sec >= begin_sec and finish_sec <= end_sec
-
-
-def canonicalize_to_5min_interval(interval: str) -> str | None:
-    start_text, _, _end_text = interval.partition("-")
-    start_sec = to_seconds(start_text)
-    if start_sec is None:
-        return None
-    canonical_start = (start_sec // 300) * 300
-    canonical_end = canonical_start + 300
-    if canonical_end > 24 * 3600:
-        return None
-
-    def fmt(total_seconds: int) -> str:
-        hh = total_seconds // 3600
-        mm = (total_seconds % 3600) // 60
-        ss = total_seconds % 60
-        return f"{hh:02d}:{mm:02d}:{ss:02d}"
-
-    return f"{fmt(canonical_start)}-{fmt(canonical_end)}"
-
-
-def normalize_direction(value: object) -> str:
-    text = str(value or "").strip()
-    text = re.sub(r"\s+", " ", text)
-    return text
+# to_seconds, interval_in_window, canonicalize_to_5min_interval,
+# normalize_direction are imported from shared_utils
 
 
 def resolve_location_label(folder_name: str) -> str | None:
@@ -215,8 +142,7 @@ def resolve_location_label(folder_name: str) -> str | None:
     return LOCATION_LABEL_MAP.get(canonical_folder)
 
 
-def is_total_text(value: object) -> bool:
-    return str(value or "").strip().lower() == "total"
+# is_total_text is imported from shared_utils
 
 
 def get_sheet_case_insensitive(workbook, name: str):

@@ -29,6 +29,11 @@ from routesampler_utils import (  # type: ignore[import-not-found]
     write_edge_data_xml,
 )
 
+from shared_utils import (
+    normalize_key,
+    parse_interval_from_filename,
+)
+
 
 DEFAULT_RAW_ROOT = WORKSPACE_ROOT / "ProcessedVideoOutput"
 DEFAULT_DATE_WORKBOOK = DEFAULT_RAW_ROOT / "5minCompileSummary_DateTabs_UPDATED.xlsx"
@@ -63,8 +68,7 @@ EXPECTED_SUMMARY_ROWS = 10287
 SUMMARY_SHEETS = ("Summary", "Approach-Wise", "Direction Counts")
 
 
-def normalize_key(value: object) -> str:
-    return "".join(ch.lower() for ch in str(value).strip() if ch.isalnum())
+# normalize_key is imported from shared_utils
 
 
 def normalize_date_token(value: object) -> str:
@@ -78,68 +82,7 @@ def date_match_key(value: object) -> str:
     return token
 
 
-def parse_interval_start_code(value: str) -> str | None:
-    text = str(value).strip()
-    if not re.fullmatch(r"\d{3,4}", text):
-        return None
-    token = text.zfill(4)
-    hours = int(token[:2])
-    minutes = int(token[2:4])
-    if hours > 23 or minutes > 59:
-        return None
-
-    # Raw shorthand files (e.g., 905.xlsx) are coded +10 minutes from the literal token.
-    total_seconds = (hours * 3600) + (minutes * 60) + (10 * 60)
-    norm_hours = (total_seconds // 3600) % 24
-    norm_minutes = (total_seconds % 3600) // 60
-    norm_seconds = total_seconds % 60
-    return f"{norm_hours:02d}:{norm_minutes:02d}:{norm_seconds:02d}"
-
-
-def parse_interval_end_code(start_text: str) -> str | None:
-    start_sec = to_seconds(start_text)
-    if start_sec is None:
-        return None
-    end_sec = start_sec + 300
-    hours = end_sec // 3600
-    minutes = (end_sec % 3600) // 60
-    seconds = end_sec % 60
-    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-
-
-def parse_clock_token(value: str) -> str | None:
-    text = str(value).strip().replace(".", ":").replace("_", ":")
-    parts = [part for part in text.split(":") if part != ""]
-    if len(parts) not in {2, 3}:
-        return None
-    try:
-        numbers = [int(part) for part in parts]
-    except ValueError:
-        return None
-
-    hours = numbers[0]
-    minutes = numbers[1]
-    seconds = numbers[2] if len(numbers) == 3 else 0
-    if not (0 <= hours <= 23 and 0 <= minutes <= 59 and 0 <= seconds <= 59):
-        return None
-    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-
-
-def parse_interval_from_filename(path: Path) -> tuple[str | None, str | None]:
-    stem = path.stem.strip()
-
-    range_match = re.search(r"(\d{1,2}[.:_]\d{2}(?:[.:_]\d{2})?)\s*-\s*(\d{1,2}[.:_]\d{2}(?:[.:_]\d{2})?)", stem)
-    if range_match:
-        start_text = parse_clock_token(range_match.group(1))
-        end_text = parse_clock_token(range_match.group(2))
-        if start_text and end_text:
-            return start_text, end_text
-
-    start_text = parse_interval_start_code(stem)
-    if start_text:
-        return start_text, parse_interval_end_code(start_text)
-
-    return None, None
+# parse_interval_from_filename is imported from shared_utils
 
 
 def to_seconds(value: object) -> int | None:

@@ -5,8 +5,8 @@ import re
 
 import pandas as pd
 from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font
-from openpyxl.utils import get_column_letter
+
+from shared_utils import write_dataframe_to_sheet
 
 
 ROOT_DIR = Path(r"c:\Users\gupta\SumoCallibration\20260222")
@@ -35,30 +35,9 @@ def to_int(value) -> int:
     return int(float(value))
 
 
-def autosize_columns(sheet) -> None:
-    for column_cells in sheet.columns:
-        max_length = 0
-        column_letter = get_column_letter(column_cells[0].column)
-        for cell in column_cells:
-            text = "" if cell.value is None else str(cell.value)
-            max_length = max(max_length, len(text))
-        sheet.column_dimensions[column_letter].width = min(max_length + 2, 26)
-
-
 def write_dataframe(workbook: Workbook, sheet_name: str, dataframe: pd.DataFrame) -> None:
-    if sheet_name in workbook.sheetnames:
-        del workbook[sheet_name]
-
-    sheet = workbook.create_sheet(sheet_name)
-    sheet.append(list(dataframe.columns))
-    for row in dataframe.itertuples(index=False, name=None):
-        sheet.append(list(row))
-
-    for cell in sheet[1]:
-        cell.font = Font(bold=True)
-
-    autosize_columns(sheet)
-    sheet.freeze_panes = "A2"
+    """Write a DataFrame to a workbook sheet (delegates to shared utility)."""
+    write_dataframe_to_sheet(workbook, sheet_name, dataframe)
 
 
 def remove_event_sheets(workbook_path: Path) -> bool:
