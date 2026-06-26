@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 import re
 
@@ -32,7 +33,11 @@ def to_int(value) -> int:
         return 0
     if isinstance(value, str) and not value.strip():
         return 0
-    return int(float(value))
+    try:
+        return int(float(value))
+    except (TypeError, ValueError) as exc:
+        logging.warning("Could not convert value to int: %r (%s)", value, exc)
+        return 0
 
 
 def autosize_columns(sheet) -> None:
