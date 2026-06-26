@@ -1,17 +1,18 @@
 from pathlib import Path
 import subprocess
+import sys
 import xml.etree.ElementTree as ET
 import os
 
-ROOT = Path(r"C:\Users\gupta\SumoCallibration")
+ROOT = Path(os.environ.get("SUMO_CALIBRATION_ROOT", Path(__file__).resolve().parent))
 BASE = ROOT / "project" / "results" / "cadyts_corridor_20260222_20260225"
 CAL = BASE / "calibration"
 VAL = BASE / "validation"
 SUMO_HOME = Path(os.environ.get("SUMO_HOME", r"C:\Program Files (x86)\Eclipse\Sumo"))
 CADYTS = SUMO_HOME / "tools" / "assign" / "cadytsIterate.py"
-JAVA_HOME = BASE / "tools" / "jdk-21.0.10+7-jre"
+JAVA_HOME = Path(os.environ.get("JAVA_HOME", str(BASE / "tools" / "jdk-21.0.10+7-jre")))
 JAR = BASE / "cadyts.jar"
-PY = Path(r"c:/Users/gupta/SumoCallibration/.venv_separate/Scripts/python.exe")
+PY = Path(os.environ.get("PYTHON_EXE", sys.executable))
 SCRIPT_ANALYZE = ROOT / "project" / "scripts" / "analyze_calibration.py"
 JUNCTION_MAP = ROOT / "project" / "scripts" / "data" / "junction_id.xlsx"
 SIG_CAL = ROOT / "project" / "results" / "corridor_calib_20260222_validate_20260225" / "inputs" / "signal_timings_20260222_0900_1000.xlsx"
