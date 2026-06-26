@@ -3274,7 +3274,10 @@ def title_block(title: str, subtitle: str) -> None:
 
 def sidebar_path_input(label: str, default: Path) -> Path:
     value = st.sidebar.text_input(label, str(default))
-    return Path(value)
+    p = Path(value)
+    if value and not p.exists():
+        st.sidebar.warning(f"Path does not exist: {p}")
+    return p
 
 
 def bootstrap_streamlit_calibration_workspace(target_root: Path, legacy_root: Path) -> list[str]:

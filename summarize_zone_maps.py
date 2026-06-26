@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -160,7 +161,7 @@ def dominant_window_from_frame_events(workbook) -> dict[str, object]:
 
 
 def main() -> None:
-    base_dir = Path(r"c:\Users\gupta\SumoCallibration\Kandevtasthan\2026 02 22\9")
+    base_dir = Path(os.environ.get("SUMO_CALIBRATION_ROOT", Path(__file__).resolve().parent)) / "Kandevtasthan" / "2026 02 22" / "9"
     target_path = base_dir / TARGET_WORKBOOK
 
     source_files = sorted(base_dir.glob(SOURCE_PATTERN))

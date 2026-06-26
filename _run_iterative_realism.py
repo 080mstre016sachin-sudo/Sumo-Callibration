@@ -1,14 +1,16 @@
 from pathlib import Path
 import subprocess
+import sys
 import pandas as pd
 import openpyxl
 import re
 import shutil
+import os
 
-ROOT = Path(r"C:\Users\gupta\SumoCallibration")
+ROOT = Path(os.environ.get("SUMO_CALIBRATION_ROOT", Path(__file__).resolve().parent))
 PROJECT = ROOT / "project"
 SCRIPTS = PROJECT / "scripts"
-PY = Path(r"c:/Users/gupta/SumoCallibration/.venv_separate/Scripts/python.exe")
+PY = Path(os.environ.get("PYTHON_EXE", sys.executable))
 
 BASE = PROJECT / "results" / "frame_based_5min_corridor"
 OUT = PROJECT / "results" / "frame_based_5min_corridor_iterative"

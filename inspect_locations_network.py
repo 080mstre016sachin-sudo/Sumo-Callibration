@@ -1,8 +1,9 @@
-﻿import re
+﻿import os
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import pandas as pd
-base = Path("C:/Users/gupta/SumoCallibration")
+base = Path(os.environ.get("SUMO_CALIBRATION_ROOT", Path(__file__).resolve().parent))
 xlsx = base / "Streamlit_Callibration" / "LocationID.xlsx"
 xmlf = base / "Streamlit_Callibration" / "Network.net.xml"
 print("=== Excel Summary ===")
